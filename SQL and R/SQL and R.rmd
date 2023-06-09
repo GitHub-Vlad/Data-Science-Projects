@@ -1,0 +1,73 @@
+
+
+### Vladimir Nimchenko
+
+### Introduction: 
+I had selected 8 friends to rate 8 different movies. The movies I selected had three genre's: comedy,action,and drama. I would like to find out the mean rating of each genre.I would also like to find out the  mean rating for each friend. I will create appropriate tables in the database and connect to the database in R.
+
+### Connecting to the Database.
+```{r} 
+library(RMySQL)
+library(dplyr)
+
+#prompt for credentials
+username <- rstudioapi::askForPassword("Database username")
+password <- rstudioapi::askForPassword("Database password")
+
+#connecting to the mysql database
+con <- dbConnect(MySQL(), user=username, password=password, dbname='sakila', host='localhost')
+
+```
+
+### Displaying the data by running R command which calls the sql query
+```{r} 
+#Running SQl in R
+moviedata <- dbGetQuery(con, "SELECT p.name as friend, m.name as movie_name, m.year,m.genre,m.duration,r.rating
+                           FROM review r
+                           JOIN person p ON r.person_id = p.id
+                           JOIN movie m ON r.movie_id = m.id")
+
+
+
+```
+
+### Converting the sql table into a data frame and displaying the data
+```{r} 
+#Converting sql table into a data frame
+movie.rating <- as.data.frame(moviedata)
+#Displaying the data
+head(movie.rating)
+
+```
+
+### Finding the mean rating for each movie genre
+```{r} 
+#Finding the mean rating for each genre
+mean.movie <- aggregate(rating ~ genre, movie.rating, mean)
+#Displaying the data
+mean.movie
+```
+
+### Finding the mean rating for each person
+```{r} 
+#Finding the mean rating for each genre
+mean.movie <- aggregate(rating ~ friend, movie.rating, mean)
+#Displaying the data
+mean.movie
+```
+
+### Graphing the mean rating by each movie
+```{r} 
+#Finding the mean rating for each movie
+mean.movie <- aggregate(rating ~ movie_name, movie.rating, mean)
+#plotting a bar plot of the graph
+library(ggplot2)
+library("stringr")
+gginit.movie <- ggplot(mean.movie,aes(x=movie_name,y=rating))
+plottype.movie <- geom_bar(stat="Identity",color='blue',fill='purple',alpha=0.5)
+plottheme.movie <- theme_bw()
+gginit.movie + plottype.movie + plottheme.movie + xlab('Movie Name') + ylab('Mean Rating') + ylim(0,5) + scale_x_discrete(labels = function(x) str_wrap(x, width = 10)) 
+```
+
+###  Conclusion: 
+By looking at the rating by genre mean,we can see that Drama was rated the highest and Action movies were rated the lowest. Looking at the bar chart which shows us mean by a particular movie we can see that "The Pianist" is rated the highest.We also see that "Fast & Furious" as well as "The Incredibles" had the second and third lowest ratings. We can see the correlation of how the average rating of each movie affected the average rating of each genre. Because "The Pianist" was the highest rated movie out of the sample population Drama movies it made that genre be the highest. Same with the "Fast & Furious" and  "The Incredibles" individual low ratings made the sample population of Action movies be the lowest.
