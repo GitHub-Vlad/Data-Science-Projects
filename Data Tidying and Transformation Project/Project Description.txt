@@ -1,3 +1,0 @@
-Data Tidying/Transformation Project
-
-I chose three data sets and used the tidyr and dplyr R libraries as needed to tidy and transform the data to prepare it for downstream analysis.
