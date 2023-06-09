@@ -12,7 +12,7 @@ library(tidyr)
 library(dplyr)
 library(ggplot2)
  #Manually created csv from the chart,loaded it to github and added it to an object called: "alcohol_consumption"
- alcohol_consumption <- read.csv("https://raw.githubusercontent.com/GitHub-Vlad/Data-Science/main/Alcohol%20Consumption%20by%20Country.csv",header = TRUE)
+ alcohol_consumption <- read.csv("https://raw.githubusercontent.com/GitHub-Vlad/Data-Science-Projects/main/Data%20Tidying%20and%20Transformation%20Project/Alcohol%20Consumption%20by%20Country.csv",header = TRUE)
 
  print(alcohol_consumption)
 ```
