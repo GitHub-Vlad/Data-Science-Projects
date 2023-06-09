@@ -12,7 +12,7 @@ library(tidyr)
 library(dplyr)
 library(ggplot2)
  #Manually created csv from the chart,loaded it to github and added it to an object called: "air_quality"
- air_quality <- read.csv("https://raw.githubusercontent.com/GitHub-Vlad/Data-Science/main/Air%20Quality.csv",header = TRUE)
+ air_quality <- read.csv("https://raw.githubusercontent.com/GitHub-Vlad/Data-Science-Projects/main/Data Tidying and Transformation Project/Air Quality.csv",header = TRUE)
 
 ```
 
