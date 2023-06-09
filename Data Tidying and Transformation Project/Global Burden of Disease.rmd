@@ -2,7 +2,7 @@
 
 INTRODUCTION:
 
-The alcohol consumption by country data set(I chose only a small subset of it for the purposes of this project) by country shows how much of each type of alcohol (three categories: beer,spirit,and wine) is consumed.  I will transform and tidy my data in a few ways. The reason being is I want to analyze the data from a few different perspectives. Firstly, I want to compare the number of total deaths for each disease. Secondly, I would like to compare the total number of deaths by gender.
+The cause of disease data set(I chose only a small subset of it for the purposes of this project) by gender in year 1990 and 2017 shows the causes of disease (Communicable diseases, Injuries and Non-communicable diseases).  I will transform and tidy my data in a few ways. The reason being is I want to analyze the data from a few different perspectives. Firstly, I want to compare the number of total deaths for each disease. Secondly, I would like to compare the total number of deaths by gender.
  
 DATA LOAD
 
