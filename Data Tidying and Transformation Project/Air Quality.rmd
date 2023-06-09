@@ -1,0 +1,96 @@
+
+### Vladimir Nimchenko
+
+INTRODUCTION:
+
+The air quality data set(I chose only a small subset of it for the purposes of this project) shows the amount of the different categories of air quality (Ozone,Solar.r,Wind,and Temp) and their frequencies. I will tidy/transform the data to prepare it for analysis.
+ 
+DATA LOAD
+
+```{r}
+library(tidyr)
+library(dplyr)
+library(ggplot2)
+ #Manually created csv from the chart,loaded it to github and added it to an object called: "air_quality"
+ air_quality <- read.csv("https://raw.githubusercontent.com/GitHub-Vlad/Data-Science/main/Air%20Quality.csv",header = TRUE)
+
+```
+
+DATA Tidying/Transformation
+
+I will remove the month column from the data set because it is not relevant to our analysis.
+```{r}
+#Remove the "Month" column.
+air_quality <-select(air_quality, -c("Month"))
+```
+
+
+I reorder the "Day" column as the first column in the data frame. In this context(for our analysis) it makes it easier to read this column from left to right.
+```{r}
+#Reorder the "Day" column to be the first one on the left
+air_quality <- air_quality %>%          
+select("Day", everything())
+```
+
+
+I will now check the columns of the "air_quality" data frame to check for empty values and if they exist remove them.
+```{r}
+#Utilize the mean() function to check each column for empty values.Any output which is: NA indicates that the column has empty values
+
+mean(air_quality$Ozone)
+mean(air_quality$Wind)
+mean(air_quality$Solar.R)
+mean(air_quality$Temp)
+
+#Omit the rows which have NA values for the "Ozone" and "Solar.R" columns.. Afterwards,the mean will be available for the "Ozone" and "Solar.R" columns.
+mean(air_quality$Ozone, na.rm = TRUE)
+mean(air_quality$Solar.R, na.rm = TRUE)
+
+
+#Removing all rows which have "NA" values for the "Ozone" and "Solar.R" columns using the na.omit() function. Then copy the data frame into a new data frame called: "air_quality_analysis". 
+air_quality_analysis <- data.frame(na.omit(air_quality))
+print(air_quality_analysis)
+```
+
+
+
+
+DATA ANALYSIS
+
+For my analysis, I will create bar plots for each air category  for the four day period.I want to see the change in  distribution of each category from one day to another
+
+```{r}
+#Creating a bar plot for Ozone.
+barplot( main="Ozone Distribution",air_quality_analysis$Ozone, xlab="Day", ylab="Value", names.arg = air_quality_analysis$Day,ylim= c(0,50) )
+
+#Creating a bar plot for Solar.R.
+barplot( main="Solar.R Distribution",air_quality_analysis$Solar.R, xlab="Day", ylab="Value", names.arg = air_quality_analysis$Day,ylim= c(0,400) )
+
+#Creating a bar plot for Wind.
+barplot( main="Wind Distribution",air_quality_analysis$Wind, xlab="Day", ylab="Value", names.arg = air_quality_analysis$Day,ylim= c(0,20) )
+
+#Creating a bar plot for Temp.
+barplot( main="Temp Distribution",air_quality_analysis$Temp, xlab="Day", ylab="Value", names.arg = air_quality_analysis$Day,ylim= c(0,100) )
+```
+
+
+For my analysis, after looking at the bar plot, I will explain my findings by doing a breakdown by each category followed by a breakdown by of each day to try and find any relationship/similiarity between the categories.
+
+
+Breakdown by Category:
+
+Ozone Distribution - We see a slight decrease from Day 1 to Day 2. We see an even bigger decrease from Day 2 to Day 3. Finally, we see a slight increase from Day 3 to Day 4.
+Solar.R Distribution - We see  a slight decreases from Day 1 to Day 2. We then see a slight increase from Day 2 to Day 3. Finally, we see a large increase from Day 3 to Day 4.
+Wind Distribution - We see  a very small increase  from Day 1 to Day 2. We then see a large increase from Day 2 to Day 3. Finally, we see a small decrease from Day 3 to Day 4.
+Temp Distribution - We see  a very small increase  from Day 1 to Day 2. We then see a very small increase from Day 2 to Day 3. Finally, we see a small decrease from Day 3 to Day 4.
+
+Breakdown by Day:
+
+Day 1 to Day 2 - There was a slight decrease in both the Ozone and Solar.R category and a slight increase in the Wind and Temp categories. 
+Day 2 to Day 3 - There was a decrease in Ozone distribution. However, there was an increase in all the other Distributions.
+Day 3 to Day 4 - There was an increase in Ozone and Solar.R category and a decrease in both the Wind and Temp categories.
+
+
+CONCLUSION:
+
+From my analysis, I can see that there is a relationship/similarity between the Ozone and Solar.R categories. This is due to the fact that from Day 1 to Day 2 they both decrease and from Day 3 to Day 4 they both increase. Likewise, I noticed a relationship/similarity between the Wind and Temp categories. From Day 1 to Day 2 they increase and from Day 3 to Day 4 they decrease. Again these are just the patterns I noticed from the small sample of data I used.
