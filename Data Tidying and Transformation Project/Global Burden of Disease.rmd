@@ -11,7 +11,7 @@ library(tidyr)
 library(dplyr)
 library(ggplot2)
  #Manually created csv from the chart,loaded it to github and added it to an object called: "disease_burden"
- disease_burden <- read.csv("https://raw.githubusercontent.com/GitHub-Vlad/Data-Science/main/Global%20Burden%20of%20Disease.csv",header = TRUE)
+ disease_burden <- read.csv("https://raw.githubusercontent.com/GitHub-Vlad/Data-Science-Projects/main/Data%20Tidying%20and%20Transformation%20Project/Global%20Burden%20of%20Disease.csv",header = TRUE)
 ```
 
 
