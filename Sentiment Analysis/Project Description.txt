@@ -1,0 +1,9 @@
+Sentiment Analysis
+
+- Programmed in R
+- Used the tidyverse,tidytext,textdata and ggplot2 libraries
+- Read in the first 100 reviews of the Amazon reviews file with the columns: review title and review text. 
+- Performed Sentimental Analysis on the review title column
+- Performed Sentimental Analysis on the review text column
+
+
