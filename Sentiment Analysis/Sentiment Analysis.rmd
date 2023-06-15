@@ -1,0 +1,111 @@
+### Vladimir Nimchenko
+
+INTRODUCTION:
+
+For my data, I took a Amazon reviews file of with the columns review title and review text. The data comes from Kaggle. I shortened the reviews to 100 (got the file to 100 rows) for simplicity purposes.
+
+
+Loading the needed libraries
+```{r}
+library(tidyverse)
+library(tidytext)
+library(textdata)    
+library(ggplot2)
+
+```
+
+
+Read the data into a data frame
+```{r}
+# Read in the data from Github into a data frame
+amazon_reviews <- read.csv("https://raw.githubusercontent.com/GitHub-Vlad/Data-Science-Projects/main/Sentiment%20Analysis/Amazon_Reviews.csv", header = TRUE)
+
+#View the data
+View(amazon_reviews)
+```
+
+Sentimental Analysis for Review Title
+```{r}
+loughran_sentiments <- get_sentiments("loughran")
+# convert review titles to words
+amazon_title_words<- amazon_reviews %>%
+  select(review_title) %>%
+  mutate(linenumber = row_number()) %>%
+  unnest_tokens(output = word, input = review_title, token = "words", format = "text", to_lower = TRUE)
+
+# calculate the number of positive and negative words in the review title
+amazon_title_sentiment <- amazon_title_words %>%
+  inner_join(loughran_sentiments) %>%
+  count(sentiment) %>%
+  spread(sentiment, n, fill = 0) %>%
+  mutate(sentiment = positive - negative)
+
+# print the number of positive and negative words in the review title 
+head(amazon_title_sentiment,10)
+
+#count the most common positive and negative words in the review title
+amazon_title_common_word_count <- amazon_title_words %>%
+  inner_join(get_sentiments("loughran")) %>%
+  count(word, sentiment, sort = TRUE) %>%
+  ungroup()
+
+# print the number and name of the most common positive and negative words in the review title 
+head(amazon_title_common_word_count,10)
+
+# graphing the top 5 positive and negative words
+amazon_title_common_word_count %>%
+  group_by(sentiment) %>%
+  slice_max(n, n = 5) %>% 
+  ungroup() %>%
+  mutate(word = reorder(word, n)) %>%
+  ggplot(aes(n, word, fill = sentiment)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~sentiment, scales = "free_y") +
+  labs(x = "Sentiment",
+       y = NULL)
+```
+
+Sentimental Analysis for Review Text
+```{r}
+# convert review text to words
+amazon_text_words<- amazon_reviews %>%
+  select(review_text) %>%
+  mutate(linenumber = row_number()) %>%
+  unnest_tokens(output = word, input = review_text, token = "words", format = "text", to_lower = TRUE)
+
+# calculate the number of positive and negative words in the review text
+amazon_text_sentiment <- amazon_text_words%>%
+  inner_join(loughran_sentiments) %>%
+  count(sentiment) %>%
+  spread(sentiment, n, fill = 0) %>%
+  mutate(sentiment = positive - negative)
+
+# print the number of positive and negative words in the review text
+head(amazon_text_sentiment,10)
+
+#count the most common positive and negative words in the review text
+amazon_text_common_word_count <- amazon_text_words %>%
+  inner_join(get_sentiments("loughran")) %>%
+  count(word, sentiment, sort = TRUE) %>%
+  ungroup()
+
+# print the number and name of the most common positive and negative words in the review text
+head(amazon_text_common_word_count,10)
+
+# graphing the top 5 positive and negative words
+amazon_text_common_word_count %>%
+  group_by(sentiment) %>%
+  slice_max(n, n = 5) %>% 
+  ungroup() %>%
+  mutate(word = reorder(word, n)) %>%
+  ggplot(aes(n, word, fill = sentiment)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~sentiment, scales = "free_y") +
+  labs(x = "Sentiment",
+       y = NULL)
+```
+
+
+CONCLUSION:
+
+After conducting sentiment analysis for both the review text and the review title, I observed that review title had 10 negative and 22 positive words where as the review text had 133 positive and 104 negative words. This was a result that the text had many more words than the title. 
