@@ -1,0 +1,285 @@
+
+```{r}
+library(Matrix)
+library(MASS)
+library(dplyr)
+``` 
+
+
+**Descriptive and Inferential Statistics**
+
+The  two independent variables I will choose are: GRLivArea (above ground living area in square feet) and 
+LotFrontage(Linear feet of street connected to property). The dependent variable I will choose is Sale price.
+
+
+
+Provide uni variate descriptive statistics and appropriate plots for the training data set.  Provide a scatter plot matrix for at least two of the independent variables and the dependent variable.
+```{r}
+# Load the training data set
+training_set = read.csv("https://raw.githubusercontent.com/GitHub-Vlad/Data-Science-Projects/main/House%20Prices%20-%20Advanced%20Regression%20Techniques%20(Kaggle%20competition)/train.csv")
+
+GRLivArea = training_set$GrLivArea
+LotFrontage = training_set$LotFrontage
+SalePrice =  training_set$SalePrice
+
+
+#Descriptive statistics for "above ground living area"
+summary(GRLivArea)
+#Histogram for "above ground living area"
+hist(GRLivArea, breaks = 10, main = "Above Ground Living Area")
+
+
+#Descriptive statistics for "Linear feet of street connected to property"
+summary(LotFrontage)
+#Histogram for "Linear feet of street connected to property"
+hist(LotFrontage, breaks = 10, main = "Linear feet of street connected to property")
+
+#Descriptive statistics for "Sale Price"
+summary(SalePrice)
+#Histogram for "Sale Price"
+hist(SalePrice, breaks = 10, main = "Sale Price")
+
+
+#Scatter plot matrix of GRLivArea and LotFrontage versus SalePrice
+par(mfrow=c(1,2))
+plot(GRLivArea, SalePrice , xlab="Above Ground Living Area", ylab="SalePrice", main="Living Area vs SalePrice")
+plot(LotFrontage, SalePrice, xlab="Linear feet of street connected to property", ylab="SalePrice", main="Street Connected vs SalePrice")
+```
+
+Analysis:
+It is clear that there is a strong correlation between "ground living area" and Sale price. The more the square footage of of above "ground living area" the higher the price. That is no surprise because the bigger the living area the more you will need to pay. However, there is also a correlation between "Linear feet of street connected to property" and sales price. The correlation is not as strong as with the "above ground living area" variable  because some houses might have more/useful linear street feet connected top property and it will cost more.... for others it might be marginal and not factor into the Sale Price as much. Its not like living space.
+
+
+
+Derive a correlation matrix for any three quantitative variables in the dataset.
+```{r}
+library(corrplot)
+
+GRLivArea = training_set$GrLivArea
+LotFrontage = training_set$LotFrontage
+SalePrice =  training_set$SalePrice
+
+df = training_set[c("GrLivArea", "LotFrontage", "SalePrice")]
+correlation_Matrix= cor(df, use = "complete.obs")
+print(correlation_Matrix)
+
+#Plotting a correlation matrix
+corrplot(correlation_Matrix, method = "square")
+```
+
+Analysis:
+From the correlation matrix, we can conclude that the sale price has a strong correlation with the "Above Ground living area" variable and a weak correlation with the "Linear feet of street connected to property" variable. We also see that there is a weak correlation between the "Above Ground living area" and "Linear feet of street connected to property".
+
+
+
+
+Test the hypotheses that the correlations between each pairwise set of variables is 0 and provide an 80% confidence interval.  Discuss the meaning of your analysis.  Would you be worried about familywise error? Why or why not?
+```{r}
+
+# Performing t-test to find the correlation between "Above Ground living area" and Sale Price
+t.test(GRLivArea , SalePrice, conf.level = 0.80)
+
+
+# Performing t-test to find the correlation between "Linear feet of street connected to property" and Sale Price
+t.test(LotFrontage, SalePrice, conf.level = 0.80)
+
+``` 
+
+Analysis:
+
+Since for both the "Above Ground living area" and Sale Price" and "Linear feet of street connected to property" and SalePrice"  the p-value (2.2e-16) of the  analysis is way below the significant value 0.05, we can reject the null hypothesis and in fact say that there is a  correlation between sale price and "Above Ground living area" and
+between "linear feet of street connected to property" and "SalePrice".in turn making the correlations between both independent variables and the sales price not 0. I would be worried about a familywise error. The reason being is that we are working with multiple  variables and that would increase the chance of making false discoveries especially when performing multiple hypotheses tests.   
+
+
+
+
+**Linear Algebra and Correlation**:
+
+
+Invert your correlation matrix from above. (This is known as the precision matrix and contains variance inflation factors on the diagonal.) 
+```{r}
+#inverting the correlation matrix from above
+precision_Matrix = solve(correlation_Matrix)
+print(precision_Matrix)
+``` 
+
+Multiply the correlation matrix by the precision matrix
+```{r}
+#multiplying the correlation matrix by the precision matrix
+round((correlation_Matrix%*% precision_Matrix), 4)
+``` 
+
+Multiply the precision matrix by the correlation matrix
+```{r}
+#multiplying the precision matrix by the correlation matrix
+round((precision_Matrix%*% correlation_Matrix), 4)
+``` 
+
+Conduct LU decomposition on the correlation matrix (Calculating the lower triangular matrix)
+```{r}
+Lower_correlation_Matrix = lu(correlation_Matrix )
+Lower_correlation_Matrix = expand(Lower_correlation_Matrix)
+LCM = Lower_correlation_Matrix$L
+print(LCM)
+``` 
+
+
+Conduct LU decomposition on the correlation matrix (Calculating the upper triangular matrix)
+```{r}
+Upper_correlation_Matrix = lu(correlation_Matrix)
+Upper_correlation_Matrix = expand(Upper_correlation_Matrix)
+UCM = Upper_correlation_Matrix$U
+print(UCM)
+``` 
+
+
+Conduct LU decomposition on the precision matrix (Calculating the lower triangular matrix)
+```{r}
+Lower_precision_Matrix = lu(precision_Matrix )
+Lower_precision_Matrix = expand(Lower_precision_Matrix )
+LPM = Lower_precision_Matrix$L
+print(LPM)
+``` 
+
+Conduct LU decomposition on the precision matrix (Calculating the upper triangular matrix)
+```{r}
+Upper_precision_Matrix = lu(precision_Matrix )
+Upper_precision_Matrix = expand(Upper_precision_Matrix )
+UPM = Upper_precision_Matrix$U
+print(UPM)
+``` 
+
+
+Conduct LU decomposition and multiplying the lower and upper correlation_Matrix
+```{r}
+LCM %*% UCM
+``` 
+
+Conduct LU decomposition and multiplying the lower and upper precision_Matrix
+```{r}
+LPM %*% UPM
+``` 
+
+We can see, from above that in fact A = LU because when we multiply the Lower Triangular matrix by the Upper Triangular matrix of both the correlation and precision matrices respectively we get the original matrix for both.
+
+
+
+**Calculus-Based Probability & Statistics**
+
+
+
+
+Select a variable in the Kaggle.com training dataset that is skewed to the right, shift it so that the minimum value is absolutely above zero if necessary. Find the optimal value of λ for this distribution, and then take 1000 samples from this exponential distribution using this value (e.g., rexp(1000, λ)).  Plot a histogram and compare it with a histogram of your original variable
+```{r}
+
+# I will now fit the "Above Ground living Area" variable data into an exponential function and find the rate (λ)
+fitdistr(training_set$GrLivArea, "exponential")
+
+# Retrieving the rate(λ), I can now generate the exponential distribution needed to plot the Sample histogram
+sample = rexp(1000, rate = 0.0006598640)
+
+# plot the histogram of the "Above Ground living Area" variable from the training set and the one for the Sample data set (using exponential distribution)
+par(mfrow=c(1,2))
+hist_observed = hist(training_set$GrLivArea, breaks = 50, xlab = "Observed_Above_Ground_living_Area", main = "Observed")
+hist_simulated = hist(sample, breaks = 50,xlab = "Simulated_Above_Ground_living_Area", main = "Sample")
+
+``` 
+
+Analysis:
+Based on the observed and sample visuals, we can see that the sample data is skewed more towards the right, whereas the observed data is concentrated more toward the center.
+
+
+
+Using the exponential pdf, find the 5th and 95th percentiles using the cumulative distribution function (CDF)
+```{r}
+quantile(sample, probs = c(0.05, 0.95))
+``` 
+
+Also generate a 95% confidence interval from the empirical data, assuming normality
+```{r}
+#Finding the mean of the observed data
+mean_observed = mean(training_set$GrLivArea)
+
+#Finding the standard deviation of the observed data
+standard_deviation_observed = sd(training_set$GrLivArea)
+
+#Finding the standard error
+standard_error_observed = qnorm(0.95) * standard_deviation_observed/sqrt(1000)
+
+#Finding the interval from the left side of the mean
+left_interval = mean_observed - standard_error_observed 
+
+#Finding the interval from the right side of the mean
+right_interval = mean_observed + standard_error_observed 
+
+print(paste0('The 95% confidence interval for the imperical data lies between ', left_interval ,' and ', right_interval))
+
+#Visualizing this via histogram to assume normality
+hist(rnorm(length(training_set$GrLivArea), mean_observed, standard_deviation_observed),xlab = "Observed_Above_Ground_living_Area", main = "Observed Normality")
+
+``` 
+
+Finally, provide the empirical 5th percentile and 95th percentile of the data. Discuss.
+```{r}
+quantile(training_set$GrLivArea, probs = c(0.05, 0.95))
+``` 
+
+We can see from the calculation above that the lowest 5% of the observations are below 848 square feet and the highest 5% are above 2,466 square feet. We can thus conclude that
+90% percent (95% - 5%) will be in this range.
+
+
+
+**Modeling**
+
+Modeling.  Build some type of multiple regression  model and submit your model to the competition board.  Provide your complete model summary and results with analysis.  Report your Kaggle.com user name and score. Provide a screen snapshot of your score with your name identifiable.
+
+
+Create  a multiple linear regression model for the data set and retrieving the summary
+```{r}
+#select only numeric columns from training set
+training_set %>% select_if(is.numeric)->training_set
+lm_sale_price <- lm(SalePrice ~ ., data = training_set)
+summary(lm_sale_price)
+``` 
+
+Looking at the summary multiple regression model built above, certain adjustments need to be made to ensure that it only contains those independent variables which are relevant in determining the dependent variable (Sale Price) in our case. Two steps need to be done to the data to prepare it for building a useful  multiple regression model. The first step is to remove all N/A values. This will ensure variation in the model by removing all unique values. The second step would be to remove all independent variables whose 
+p-value > 0.05. An independent variable with a p-value above 0.05 would prevent us from making any conclusions about the dependent variable (statistically insignificant) and thus reduce the efficacy of the model.
+
+
+Create and plot a multiple Linear regression model for the adjusted data set and retrieving the summary
+```{r}
+lm_sale_price_adjusted <- lm(SalePrice ~ MSSubClass + LotArea + OverallQual +
+                      OverallCond + YearBuilt + YearRemodAdd + MasVnrArea + 
+                      BsmtFinSF1 + X1stFlrSF + X2ndFlrSF + BsmtFullBath + 
+                      BedroomAbvGr + KitchenAbvGr +
+                      TotRmsAbvGrd + Fireplaces + GarageCars + WoodDeckSF, 
+                    data = training_set)
+
+summary(lm_sale_price_adjusted)
+
+``` 
+
+
+
+Load the test.csv data set from kaggle and run the multiple Linear regression model to predict results
+```{r}
+# Load the test dataset
+testing_set <- read.csv("https://raw.githubusercontent.com/GitHub-Vlad/Data-Science-Projects/main/House%20Prices%20-%20Advanced%20Regression%20Techniques%20(Kaggle%20competition)/test.csv")
+
+#Replace all N/A values with 0
+testing_set[is.na(testing_set)] = 0
+ 
+#run the adjusted multiple regression model created above on the test data set to retrieve the values of the predicted variable (SalePrice)
+prediction <- predict(lm_sale_price_adjusted, testing_set)
+
+#merge the test and prediction data frames on Id 
+prediction <- data.frame(cbind(testing_set$Id, prediction))
+
+#Retrieve the columns "Id" and "Sale Price" to the merged data frame
+colnames(prediction) = c('Id', 'SalePrice')
+
+#Export results to csv
+#write.csv(prediction, "house_price_predictions.csv")
+
+``` 
+
