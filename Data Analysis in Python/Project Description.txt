@@ -1,8 +1,0 @@
-Data Analysis in Python
-
-- Programmed in Python
-- Used the pandas,numpy,matplotlib and seaborn libraries
-- Chose an HR data set from Kaggle used in the HR Metrics and Analytics department at the New England College of Business.
-- Performed Data Exploration, Data Wrangling and created Visualizations for Analysis
--
-
